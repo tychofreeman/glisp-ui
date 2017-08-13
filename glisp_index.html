@@ -1,0 +1,41 @@
+<html>
+  <style>
+    .editor {
+      border-style: solid;
+      border-width: 1px;
+    }
+    .thingy::before {
+      content: "(";
+    }
+    .thingy::after {
+      content: ")";
+    }
+  </style>
+  <script src="/editor.js"></script>
+  <script type="text/javascript">
+    window.addEventListener("load", function(event) {
+        var resultsNode = document.getElementsByClassName("results")[0];
+        var editorNode = document.getElementsByClassName("editor")[0];
+        var editor = new Editor(editorNode);
+        var submitButton = document.getElementsByClassName("submit")[0];
+        submitButton.addEventListener("click", function(event) {
+          var x = new XMLHttpRequest();
+          x.addEventListener("load", function() {
+            resultsNode.innerHTML = '';
+            resultsNode.innerText = this.responseText;
+          });
+          x.open('POST', '/eval');
+          x.setRequestHeader('Content-Type', 'text/plain');
+          var m = editor.model();
+          console.log("Model:", m);
+          x.send(m);
+        });
+
+    });
+  </script>
+  <body>
+    <div class="editor" contenteditable="true"></div>
+    <button class="submit">Eval</button>
+    <div class="results"></div>
+  </body>
+</html>
